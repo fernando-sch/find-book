@@ -1,4 +1,4 @@
-import Express from './infra/http/express';
+import Express from "./infra/http/express";
 
 const express = new Express();
 
