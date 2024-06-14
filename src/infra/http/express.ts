@@ -1,6 +1,10 @@
 import express, { Application } from "express";
 import cors from "cors";
+import dotenv from "dotenv";
 import { BookRoutes } from "../routes/books.routes";
+import { connect } from "../database/mongoose";
+
+dotenv.config();
 
 class Express {
   app: Application;
@@ -22,7 +26,10 @@ class Express {
   }
 
   listen() {
-    this.app.listen(4000, () => console.log("Server is running at port 4000"));
+    this.app.listen(4000, () => {
+      connect();
+      console.log("Server is running at port 4000");
+    });
   }
 }
 
