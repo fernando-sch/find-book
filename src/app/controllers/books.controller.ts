@@ -9,18 +9,50 @@ export class BooksController {
     const bookParams: BookDto = httpRequest.body;
 
     try {
-      if (!bookParams) {
-        return {
-          status: 400,
-          message: "Missing body",
-        };
-      }
-
       const response = await this.booksUseCase.createBook(bookParams);
 
       return {
         status: 201,
-        message: "Livro criado com sucesso",
+        message: "Book Created",
+        data: response,
+      };
+    } catch (error: any) {
+      return {
+        status: 400,
+        message: error.message,
+      };
+    }
+  }
+
+  async find(httpRequest: HttpRequest): Promise<HttpResponse> {
+    const dto: BookDto = httpRequest.query.title;
+
+    try {
+      const response = await this.booksUseCase.findBook(dto);
+
+      return {
+        status: 200,
+        message: "Book Founded",
+        data: response,
+      };
+    } catch (error: any) {
+      return {
+        status: 400,
+        message: error.message,
+      };
+    }
+  }
+
+  async update(httpRequest: HttpRequest): Promise<HttpResponse> {
+    const bookParams: BookDto = httpRequest.body;
+    const id: string = httpRequest.params.id;
+
+    try {
+      const response = await this.booksUseCase.updateBook(bookParams, id);
+
+      return {
+        status: 200,
+        message: "Book Updated",
         data: response,
       };
     } catch (error: any) {
