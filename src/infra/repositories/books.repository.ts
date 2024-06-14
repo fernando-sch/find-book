@@ -6,7 +6,7 @@ const booksSchema = new mongoose.Schema({
   title: String,
   isbn: String,
   pageCount: Number,
-  publishedData: Date,
+  publishedData: { $date: Date },
   thumbnailUrl: String,
   shortDescription: String,
   longDescription: String,
