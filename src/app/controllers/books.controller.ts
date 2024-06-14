@@ -1,8 +1,9 @@
 import { HttpRequest, HttpResponse } from "../../infra/http/http.adapter";
 import { BookDto } from "../dto/book.dto";
+import { BooksUseCase } from "../userCases/books.user.case";
 
 export class BooksController {
-  constructor() {}
+  constructor(private readonly booksUseCase: BooksUseCase) {}
 
   async create(httpRequest: HttpRequest): Promise<HttpResponse> {
     const bookParams: BookDto = httpRequest.body;
@@ -15,7 +16,13 @@ export class BooksController {
         };
       }
 
-      return { status: 201, message: "Livro criado com sucesso" };
+      const response = await this.booksUseCase.createBook(bookParams);
+
+      return {
+        status: 201,
+        message: "Livro criado com sucesso",
+        data: response,
+      };
     } catch (error: any) {
       return {
         status: 400,
