@@ -14,6 +14,7 @@ const booksSchema = new mongoose.Schema({
   status: String,
   authors: [String],
   categories: [String],
+  embeddings: [Number],
 });
 
 const Books = mongoose.model("books", booksSchema);
