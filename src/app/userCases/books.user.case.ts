@@ -1,4 +1,5 @@
-import { generateEmbeddings } from "../../infra/services/openai";
+import { generateEmbeddings } from "../../infra/services/openai/generate.embeddings";
+import { searchOpenAI } from "../../infra/services/openai/search";
 import { BookDto } from "../dto/book.dto";
 import { BooksRepository } from "../repositories/books.repository";
 
@@ -22,8 +23,11 @@ export class BooksUseCase {
     return this.booksRepository.create({ ...dto, embeddings });
   }
 
-  async findBook(dto: BookDto) {
-    return this.booksRepository.find(dto);
+  async searchBooks(search: string) {
+    const embeddings = await generateEmbeddings(search);
+    const searchResponse = await searchOpenAI(search);
+
+    return this.booksRepository.search(embeddings, searchResponse);
   }
 
   async updateBook(dto: BookDto, id: string) {
