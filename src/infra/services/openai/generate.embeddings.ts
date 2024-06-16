@@ -12,6 +12,6 @@ export const generateEmbeddings = async (input: string) => {
 
     return response.data[0].embedding;
   } catch (error: any) {
-    throw new HttpException(600, error.message);
+    throw new HttpException(500, error.message);
   }
 };
