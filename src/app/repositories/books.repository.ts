@@ -5,6 +5,9 @@ import { BookDto } from "../dto/book.dto";
 // Because inner layer can't communicate directly with outer layers
 export abstract class BooksRepository {
   abstract create(dto: BookDto): void;
-  abstract find(dto: BookDto): Promise<BookEntity | null>;
+  abstract search(
+    embedding: number[],
+    matchBooks: Record<string, any>
+  ): Promise<BookEntity[] | null>;
   abstract update(dto: BookDto, id: string): Promise<BookEntity | null>;
 }

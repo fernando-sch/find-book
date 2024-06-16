@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { BookDto } from "../../app/dto/book.dto";
 import { BooksRepository } from "../../app/repositories/books.repository";
 import { BookEntity } from "../../domain/entities/book.entity";
+import { GptResponse } from "../services/openai/search";
 
 const booksSchema = new mongoose.Schema({
   title: String,
@@ -28,9 +29,49 @@ export class BooksRepositoryMongoose implements BooksRepository {
     return books.save;
   }
 
-  async find(dto: BookDto): Promise<BookEntity | null> {
-    const response = await Books.findOne({ title: dto.title });
-    return response ? response.toObject() : null;
+  async search(
+    embedding: number[],
+    matchBooks: GptResponse
+  ): Promise<BookEntity[] | null> {
+    const response = await Books.aggregate([
+      {
+        $vectorSearch: {
+          index: "embeddings",
+          limit: 10,
+          numCandidates: 20,
+          queryVector: embedding,
+          path: "embeddings",
+        },
+      },
+      {
+        $match: {
+          $or: [
+            { title: new RegExp(matchBooks.title, "i") },
+            { authors: new RegExp(matchBooks.authors, "i") },
+            { categories: new RegExp(matchBooks.categories, "i") },
+            { longDescription: new RegExp(matchBooks.longDescription, "i") },
+          ],
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          isbn: 1,
+          pageCount: 1,
+          publishedData: 1,
+          thumbnailUrl: 1,
+          shortDescription: 1,
+          longDescription: 1,
+          status: 1,
+          authors: 1,
+          categories: 1,
+          score: { $meta: "vectorSearchScore" },
+        },
+      },
+    ]);
+
+    return response;
   }
 
   async update(dto: BookDto, id: string): Promise<BookEntity | null> {
